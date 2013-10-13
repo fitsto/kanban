@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from principal.models import Grupo, Proyecto, Etapa, Categoria
+from principal.models import Grupo, Proyecto, Etapa, Categoria,Tarea
 
 from django.contrib.auth.models import User
 
@@ -208,3 +208,84 @@ class CategoriaModelTest(TestCase):
 		self.assertEquals(categoria_db.descripcion,"Error del sistema")
 		self.assertEquals(categoria_db.prioridad,1)
 		self.assertEquals(categoria_db.color,"red")
+
+
+class TareaModelTest(TestCase):
+
+	def test_crear_una_tarea_del_proyecto(self):
+		usuario = User.objects.create(username='user1')
+		# partimos creando el grupo
+		grupo = Grupo()
+		grupo.nombre = "Grupo 1"
+		grupo.propietario = usuario
+		grupo.fecha_creacion = timezone.now()
+		grupo.save()
+
+		proyecto = Proyecto()
+		proyecto.grupo = grupo
+		proyecto.nombre = "Proyecto 1"
+		proyecto.descripcion = "Primer proyecto del grupo"
+		proyecto.fecha_creacion = timezone.now()
+
+		proyecto.save()
+
+		proyecto.integrantes.add(usuario)
+
+		#creamos la categoria
+		categoria = Categoria()
+		categoria.proyecto = proyecto
+		categoria.nombre = "Bug"
+		categoria.descripcion = "Error del sistema"
+		categoria.prioridad = 1
+		categoria.color = "red"
+
+		# guardamos la categoria
+		categoria.save()
+
+		# creamos la primera etapa
+		etapa = Etapa()
+		etapa.proyecto = proyecto
+		etapa.nombre = "Pendientes"
+		etapa.descripcion = "En esta etapa se encontrararan todas las tareas pendientes"
+		etapa.orden = 1
+
+		# guardamos la etapa
+		etapa.save()
+
+		# creamos la tarea
+		tarea = Tarea()
+		tarea.proyecto = proyecto
+		tarea.nombre = "Tarea 1"
+		tarea.etapa = etapa
+		tarea.estimacionTiempo = 3
+		tarea.estimacionTipo = "h"
+		tarea.responsable = usuario
+		tarea.fechaInicio = timezone.now()
+		tarea.fechaFin = timezone.now()
+		tarea.categoria = categoria
+
+		tarea.save()
+
+		# obtenemos las tareas
+		tareas = Tarea.objects.all()
+
+		# comprobamos que este la tarea que guardamos
+		self.assertEquals(len(tareas),1)
+
+		# obtenemos la tarea de la base
+		tarea_db = tareas[0]
+
+		# comprobamos que la tarea de la base de datos sea igual
+		# a la tarea que definimos
+		self.assertEquals(tarea_db,tarea)
+
+		# comprobamos que los campos se guardaron correctamente
+		self.assertEquals(tarea_db.proyecto,proyecto)
+		self.assertEquals(tarea_db.nombre,"Tarea 1")
+		self.assertEquals(tarea_db.etapa,etapa)
+		self.assertEquals(tarea_db.estimacionTiempo,3)
+		self.assertEquals(tarea_db.estimacionTipo,"h")
+		self.assertEquals(tarea_db.responsable,usuario)
+		self.assertEquals(tarea_db.fechaInicio,tarea.fechaInicio)
+		self.assertEquals(tarea_db.fechaFin,tarea.fechaFin)
+		self.assertEquals(tarea_db.categoria,categoria)
