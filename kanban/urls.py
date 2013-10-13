@@ -4,8 +4,18 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+from rest_framework import routers
+
+from principal.views import GrupoViewSet, UserViewSet
+
+router = routers.DefaultRouter()
+router.register(r'grupos', GrupoViewSet)
+router.register(r'usuarios', UserViewSet)
+
 urlpatterns = patterns('',
     # Examples:
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # url(r'^$', 'kanban.views.home', name='home'),
     # url(r'^kanban/', include('kanban.foo.urls')),
 
