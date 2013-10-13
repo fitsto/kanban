@@ -171,3 +171,57 @@ class EtapaModelTest(TestCase):
 
 		# comprobamos que sea igual a la etapa que definimos
 		self.assertEquals(etapa3_db,etapa3)
+
+class CategoriaModelTest(TestCase):
+	def setUp(self):
+		self.u1 = User.objects.create(username='user1')
+
+	def tearDown(self):
+		self.u1.delete()
+
+	def test_crear_una_categoria_del_proyecto(self):
+		# partimos creando el grupo
+		grupo = Grupo()
+		grupo.nombre = "Grupo 1"
+		grupo.propietario = self.u1
+		grupo.fecha_creacion = timezone.now()
+		grupo.save()
+
+		proyecto = Proyecto()
+		proyecto.grupo = grupo
+		proyecto.nombre = "Proyecto 1"
+		proyecto.descripcion = "Primer proyecto del grupo"
+		proyecto.fecha_creacion = timezone.now()
+
+		proyecto.save()
+
+		proyecto.integrantes.add(self.u1)
+
+		#creamos la categoria
+		categoria = Categoria()
+		categoria.proyecto = proyecto
+		categoria.nombre = "Bug"
+		categoria.descripcion = "Error del sistema"
+		categoria.prioridad = 1
+		categoria.color = "red"
+
+		# guardamos la categoria
+		categoria.save()
+
+		# obtenemos las categorias de la base
+		categorias = Categoria.objects.all()
+
+		# comprobamos que este la categoria que guardamos en la base
+		self.assertEquals(len(categorias),1)
+
+		# 0btenemos la categoria de la base
+		categoria_db = categorias[0]
+
+		# comprobamos que la categoria de la bd sea igual a la categoria que definimos
+		self.assertEquals(categoria_db,Categoria)
+
+		# comprobamos que guardamos los campos correctamente
+		self.assertEquals(categoria_db.nombre,"Bug")
+		self.assertEquals(categoria_db.descripcion,"Error del sistema")
+		self.assertEquals(categoria_db.prioridad,1)
+		self.assertEquals(categoria_db.color,"red")
