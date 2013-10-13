@@ -2,6 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
+
 class Grupo(models.Model):
 	nombre = models.CharField(max_length=150)
 	propietario = models.ForeignKey(User)
@@ -15,8 +16,17 @@ class Proyecto(models.Model):
 	integrantes = models.ManyToManyField(User)
 	fecha_creacion = models.DateTimeField()
 
+
 class Etapa(models.Model):
 	proyecto = models.ForeignKey(Proyecto)
 	nombre = models.CharField(max_length=100)
 	descripcion = models.CharField(max_length=300)
 	orden = models.IntegerField()
+
+
+class Categoria(models.Model):
+	proyecto = models.ForeignKey(Proyecto)
+	nombre = models.CharField(max_length=100)
+	descripcion = models.CharField(max_length=300)
+	prioridad = models.IntegerField()
+	color = models.CharField(max_length=10)
