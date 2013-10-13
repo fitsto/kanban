@@ -30,3 +30,16 @@ class Categoria(models.Model):
 	descripcion = models.CharField(max_length=300)
 	prioridad = models.IntegerField()
 	color = models.CharField(max_length=10)
+
+
+class Tarea(models.Model):
+	proyecto = models.ForeignKey(Proyecto)
+	nombre = models.CharField(max_length=100)
+	etapa = models.ForeignKey(Etapa)
+	estimacionTiempo = models.IntegerField()
+	estimacionTipo = models.CharField(max_length=1)
+	responsable = models.ForeignKey(User)
+	fechaInicio = models.DateTimeField()
+	fechaFin = models.DateTimeField()
+	categoria = models.ForeignKey(Categoria)
+	
