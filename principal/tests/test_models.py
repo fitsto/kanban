@@ -5,17 +5,13 @@ from principal.models import Grupo, Proyecto, Etapa, Categoria
 from django.contrib.auth.models import User
 
 class GrupoModelTest(TestCase):
-	def setUp(self):
-		self.u1 = User.objects.create(username='user1')
-
-	def tearDown(self):
-		self.u1.delete()
 
 	def test_creando_nuevo_grupo_de_trabajo(self):
+		usuario = User.objects.create(username='user1')
 		# creamos el grupo
 		grupo = Grupo()
 		grupo.nombre = "Grupo 1"
-		grupo.propietario = self.u1
+		grupo.propietario = usuario
 		grupo.fecha_creacion = timezone.now()
 
 		# guardamos
@@ -30,23 +26,18 @@ class GrupoModelTest(TestCase):
 
 		#comprobamos que se guardaron correctamente los campos
 		self.assertEquals(grupo_db.nombre, "Grupo 1")
-		self.assertEquals(grupo_db.propietario, self.u1)
-		#self.assertEquals(grupo_db.integrantes.all()[0], self.u1)
+		self.assertEquals(grupo_db.propietario, usuario)
 		self.assertEquals(grupo_db.fecha_creacion, grupo.fecha_creacion)
 
 
 class ProyectoModelTest(TestCase):
-	def setUp(self):
-		self.u1 = User.objects.create(username='user1')
-
-	def tearDown(self):
-		self.u1.delete()
 
 	def test_creando_un_proyecto_del_grupo(self):
+		usuario = User.objects.create(username='user1')
 		# partimos creando el grupo
 		grupo = Grupo()
 		grupo.nombre = "Grupo 1"
-		grupo.propietario = self.u1
+		grupo.propietario = usuario
 		grupo.fecha_creacion = timezone.now()
 		grupo.save()
 
@@ -58,7 +49,7 @@ class ProyectoModelTest(TestCase):
 
 		proyecto.save()
 
-		proyecto.integrantes.add(self.u1)
+		proyecto.integrantes.add(usuario)
 
 		proyectos = Proyecto.objects.all()
 
@@ -73,21 +64,17 @@ class ProyectoModelTest(TestCase):
 		# comprobamos que se guardaron correctamente los campos
 		self.assertEquals(proyecto_db.nombre, "Proyecto 1")
 		self.assertEquals(proyecto_db.descripcion, "Primer proyecto del grupo")
-		self.assertEquals(proyecto_db.integrantes.all()[0], self.u1)
+		self.assertEquals(proyecto_db.integrantes.all()[0], usuario)
 		self.assertEquals(proyecto_db.fecha_creacion, proyecto.fecha_creacion)
 
 class EtapaModelTest(TestCase):
-	def setUp(self):
-		self.u1 = User.objects.create(username='user1')
-
-	def tearDown(self):
-		self.u1.delete()
 
 	def test_crear_tres_etapas_de_un_proyecto(self):
+		usuario = User.objects.create(username='user1')
 		# partimos creando el grupo
 		grupo = Grupo()
 		grupo.nombre = "Grupo 1"
-		grupo.propietario = self.u1
+		grupo.propietario = usuario
 		grupo.fecha_creacion = timezone.now()
 		grupo.save()
 
@@ -99,7 +86,7 @@ class EtapaModelTest(TestCase):
 
 		proyecto.save()
 
-		proyecto.integrantes.add(self.u1)
+		proyecto.integrantes.add(usuario)
 
 		# creamos la primera etapa
 		etapa1 = Etapa()
@@ -173,17 +160,13 @@ class EtapaModelTest(TestCase):
 		self.assertEquals(etapa3_db,etapa3)
 
 class CategoriaModelTest(TestCase):
-	def setUp(self):
-		self.u1 = User.objects.create(username='user1')
-
-	def tearDown(self):
-		self.u1.delete()
 
 	def test_crear_una_categoria_del_proyecto(self):
+		usuario = User.objects.create(username='user1')
 		# partimos creando el grupo
 		grupo = Grupo()
 		grupo.nombre = "Grupo 1"
-		grupo.propietario = self.u1
+		grupo.propietario = usuario
 		grupo.fecha_creacion = timezone.now()
 		grupo.save()
 
@@ -195,7 +178,7 @@ class CategoriaModelTest(TestCase):
 
 		proyecto.save()
 
-		proyecto.integrantes.add(self.u1)
+		proyecto.integrantes.add(usuario)
 
 		#creamos la categoria
 		categoria = Categoria()
