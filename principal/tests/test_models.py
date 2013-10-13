@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from principal.models import Grupo, Proyecto, Etapa
+from principal.models import Grupo, Proyecto, Etapa, Categoria
 
 from django.contrib.auth.models import User
 
@@ -218,7 +218,7 @@ class CategoriaModelTest(TestCase):
 		categoria_db = categorias[0]
 
 		# comprobamos que la categoria de la bd sea igual a la categoria que definimos
-		self.assertEquals(categoria_db,Categoria)
+		self.assertEquals(categoria_db,categoria)
 
 		# comprobamos que guardamos los campos correctamente
 		self.assertEquals(categoria_db.nombre,"Bug")
