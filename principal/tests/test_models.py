@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from principal.models import Grupo, Proyecto
+from principal.models import Grupo, Proyecto, Etapa
 
 from django.contrib.auth.models import User
 
@@ -75,3 +75,99 @@ class ProyectoModelTest(TestCase):
 		self.assertEquals(proyecto_db.descripcion, "Primer proyecto del grupo")
 		self.assertEquals(proyecto_db.integrantes.all()[0], self.u1)
 		self.assertEquals(proyecto_db.fecha_creacion, proyecto.fecha_creacion)
+
+class EtapaModelTest(TestCase):
+	def setUp(self):
+		self.u1 = User.objects.create(username='user1')
+
+	def tearDown(self):
+		self.u1.delete()
+
+	def test_crear_tres_etapas_de_un_proyecto(self):
+		# partimos creando el grupo
+		grupo = Grupo()
+		grupo.nombre = "Grupo 1"
+		grupo.propietario = self.u1
+		grupo.fecha_creacion = timezone.now()
+		grupo.save()
+
+		proyecto = Proyecto()
+		proyecto.grupo = grupo
+		proyecto.nombre = "Proyecto 1"
+		proyecto.descripcion = "Primer proyecto del grupo"
+		proyecto.fecha_creacion = timezone.now()
+
+		proyecto.save()
+
+		proyecto.integrantes.add(self.u1)
+
+		# creamos la primera etapa
+		etapa1 = Etapa()
+		etapa1.proyecto = proyecto
+		etapa1.nombre = "Pendientes"
+		etapa1.descripcion = "En esta etapa se encontrararan todas las tareas pendientes"
+		etapa1.orden = 1
+
+		# guardamos la etapa1
+		etapa1.save()
+
+		# obtenemos todas las etapas de la base
+		etapas = Etapa.objects.all()
+
+		# comprobamos que este solamente la etapa que guardamos
+		self.assertEquals(len(etapas),1)
+
+		# obtenemos la etapa 1 de la bd
+		etapa1_db = etapas[0]
+
+		# comprobamos que sea igual a la etapa que definimos
+		self.assertEquals(etapa1_db,etapa1)
+
+		#comprobamos que se guardaron los campos correctamente
+		self.assertEquals(etapa1_db.nombre, "Pendientes")
+		self.assertEquals(etapa1_db.descripcion, "En esta etapa se encontrararan todas las tareas pendientes")
+		self.assertEquals(etapa1_db.orden, 1)
+
+		# creamos una segunda etapa
+		etapa2 = Etapa()
+		etapa2.proyecto = proyecto
+		etapa2.nombre = "En Curso"
+		etapa2.descripcion = "En esta etapa se encontraran todas las tareas que estan en curso"
+		etapa2.orden = 2
+
+		# guardamos la etapa2
+		etapa2.save()
+
+		# obtenemos todas las etapas de la base
+		etapas = Etapa.objects.all()
+
+		# comprobamos que se encuentren las dos etapas que hemos creado
+		self.assertEquals(len(etapas),2)
+
+		# obtenemos la etapa2 de la bd
+		etapa2_db = etapas[1]
+
+		# comprobamos que sea igual a la etapa que definimos
+		self.assertEquals(etapa2_db,etapa2)
+
+		# creamos una tercera etapa, pero esta vez sin descripcion 
+		# para que sea opcional este campo
+		etapa3 = Etapa()
+		etapa3.proyecto = proyecto
+		etapa3.nombre = "Finalizadas"
+		etapa3.orden = 3
+
+		# guardamos la etapa 3
+		etapa3.save()
+
+		# obtenemos todas las etapas de la base
+		etapas = Etapa.objects.all()
+
+		# comprobamos que se encuentren las 3 etapas que hemos creado
+		self.assertEquals(len(etapas),3)
+
+		#obtenemos la etapa3 de la bd
+		etapa3_db = etapas[2]
+
+		# comprobamos que sea igual a la etapa que definimos
+		self.assertEquals(etapa3_db,etapa3)
